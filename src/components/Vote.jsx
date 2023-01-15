@@ -1,6 +1,8 @@
+import { hasSelectionSupport } from '@testing-library/user-event/dist/utils';
 import axios from 'axios';
 import { React } from 'react';
 import { useEffect, useState } from 'react';
+import { IonIcon } from 'react-ion-icon';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { API } from '../utils.ts';
 import './styles/pattern.css';
@@ -18,6 +20,12 @@ export const Vote = () => {
   const pollId = useParams().pollId;
 
   const [votedFood, setVotedFood] = useState([]);
+
+  const [votes, setVotes] = useState([]);
+
+  const [likedFood, setLikedFood] = useState(0);
+
+  const [unLikedFood, setUnLikedFood] = useState(0);
 
   const [voted, setVoted] = useState(false);
 
@@ -56,6 +64,7 @@ export const Vote = () => {
   useEffect(() => {
     checkIsParticipant();
     getPollFood();
+    getVotes();
   },[])
 
   const hasVoted = async () => {
@@ -83,39 +92,121 @@ export const Vote = () => {
   
   const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX)
   
-  const onTouchEnd = (foodId) => {
+  const onTouchEnd = async (foodId) => {
     if (!touchStart || !touchEnd) return
-    const distance = touchStart - touchEnd
-    const isLeftSwipe = distance > minSwipeDistance
-    const isRightSwipe = distance < -minSwipeDistance
-    const newVotedFood = { ...votedFood }
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
     if (isLeftSwipe){
-      newVotedFood['id'] = foodId;
-      newVotedFood['voted'] = true;
-      setVotedFood(newVotedFood);
+      votedFood.push({
+        'foodId': foodId,
+        'voted': true
+      })
+      startLeftAnimation(foodId);
+      setLikedFood(likedFood+1);
     }else if (isRightSwipe){
-      newVotedFood['id'] = foodId;
-      newVotedFood['voted'] = false;
-      setVotedFood(newVotedFood);
+      votedFood.push({
+        'foodId': foodId,
+        'voted': false
+      })
+      startRightAnimation(foodId);
+      setUnLikedFood(unLikedFood+1);
     }
+    if(votedFood.length == pollFood.length){
+      addVote();
+    }
+  }
+
+  const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  const startRightAnimation = async (foodId) => {
+    document.querySelector("#image" + foodId).style.marginLeft = '600px';
+    document.querySelector("#image" + foodId).style.rotate = '40deg';
+    document.querySelector("#image" + foodId).style.transition = '0.6s';
+    await sleep(400);
+    document.querySelector("#image" + foodId).style.display = 'none';
+  }
+
+  const startLeftAnimation = async (foodId) => {
+    document.querySelector("#image" + foodId).style.marginLeft = '-600px';
+    document.querySelector("#image" + foodId).style.rotate = '-40deg';
+    document.querySelector("#image" + foodId).style.transition = '0.6s';
+    await sleep(400);
+    document.querySelector("#image" + foodId).style.display = 'none';
+  }
+
+  const addVote = async () => {
+    votedFood.map(async (food) => {
+      if(food.voted){
+        await axios.post(API + '/vote/add', {
+          'pollId': pollId,
+          'foodId': food.foodId
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch(error => console.log(error));
+      }
+    })
+    setVote();
+  }
+
+  const setVote = async () => {
+    await axios.put(API + '/participation/setVote?userId=' + window.localStorage.getItem('id') + "&pollId="+pollId)
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch(error => console.log(error));
+    await sleep(400);
+    hasVoted();
+    getVotes();
+  }
+
+  const getVotes = async () => {
+    await axios.get(API + '/vote/getVotes/'+pollId)
+    .then((response) => {
+      setVotes(response.data);
+      console.log(response.data);
+    })
+    .catch(error => console.log(error));
   }
 
   return(
     <div className='width-full display-flex space-around'>
       { voted ? (
-        <div>
-          <h2>VOTES</h2>
+        <div className='border-smaller height-540 width-340'>
+          <div className='space-around height-440'>
+            {
+              votes.map(vote => (
+                <div className='orange-backgroundcolor border-radius-5 display-flex space-between margin-top-14 margin-left-28 width-280 height-44'>
+                  <div className='display-flex space-around align-center width-74'><h2 className='font-size-18 font-family'>{vote.name}</h2></div>
+                  <div className='display-flex space-around align-center width-64'><h2 className='font-size-18 font-weight-800 font-family'>{vote.votes}</h2></div>
+                </div>
+              ))
+            }
+          </div>
         </div>
       ):(
-        <div className='border-smaller space-around height-540 width-340'>
-          {
-            pollFood.map(food => (
-              <div onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={(e) => onTouchEnd(food.id)}>
-                {console.log(votedFood)}
-                <img className='margin-left-14 margin-top-140 position-absolute width-310' src={"/"+food.image} alt="s" />
-              </div>
-            ))
-          }
+        <div className='space-around display-block height-540 width-340'>
+          <div className='margin-top-80 display-flex space-around height-240 width-340'>
+            {
+              pollFood.map(food => (
+                <img onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={(e) => onTouchEnd(food.id)} id={"image" + food.id} className='border-radius-20 position-absolute width-310' src={"/"+food.image} alt="s" />
+              ))
+            }
+          </div>
+          <div className='margin-left-28 margin-top-40 width-280 height-40 space-between display-flex'>
+            <div className='display-flex space-around align-center width-70'>
+              <div className='orange-color font-size-24'><IonIcon name='arrow-undo'></IonIcon></div>
+              <h2>{likedFood}</h2>
+            </div>
+            <div className='display-flex space-around align-center width-70'>
+              <h2>{unLikedFood}</h2>
+              <div className='orange-color font-size-24'><IonIcon name='arrow-redo'></IonIcon></div>
+            </div>
+          </div>
         </div>
       )}
     </div>

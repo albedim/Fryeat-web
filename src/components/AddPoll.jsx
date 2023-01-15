@@ -18,7 +18,7 @@ import './styles/pattern.css';
 export const AddPoll = () => {
 
   const [name, setName] = useState();
-
+ 
   const [isLoading, setIsLoading] = useState(false);
 
   const [avaibleFood, setAvaibleFood] = useState([]);
