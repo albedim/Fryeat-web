@@ -10,6 +10,9 @@ import { Header } from './components/Header';
 import { Menu } from './components/Menu';
 import { AddPoll } from './components/AddPoll';
 import { Vote } from './components/Vote';
+import { EditPoll, Participants } from './components/Participants';
+import { PollFoodList } from './components/PollFoodList';
+import { NotFound } from './components/NotFound';
 
 function App() {
   return (
@@ -84,6 +87,25 @@ function App() {
               <Header page={"Add Poll"}/>
               <AddPoll/>
               <Menu param={"addpoll"}/>
+            </>
+          }
+        />
+        <Route
+          path='/poll/edit/:pollId'
+          element={
+            <>
+              <Header page={"Edit Poll"}/>
+              <Participants/>
+              <PollFoodList/>
+              <Menu param={"null"}/>
+            </>
+          }
+        />
+        <Route
+          path='*'
+          element={
+            <>
+              <NotFound/>
             </>
           }
         />

@@ -19,6 +19,10 @@ export const Vote = () => {
 
   const pollId = useParams().pollId;
 
+  const [isClosed, setIsClosed] = useState();
+
+  const [isOwner, setIsOwner] = useState(false);
+
   const [votedFood, setVotedFood] = useState([]);
 
   const [votes, setVotes] = useState([]);
@@ -43,28 +47,37 @@ export const Vote = () => {
 
 
   const checkIsParticipant = async () => {
-    // Is participant ? (boolean)
+    // is Partecipant ?
     await axios.get(API + '/participation/isParticipant?userId='+window.localStorage.getItem('id')+'&pollId='+pollId)
     .then(async (response) => {
-      // if not a participant
+      // If not, leave the page
       if(!response.data.param){
-        // Get poll
-        await axios.get(API + '/poll/getPoll/'+pollId)
+        navigate("/polls");
+      }else{
+        // If so, check if the poll is closed
+        await axios.get(API + '/poll/isClosed/' + pollId)
         .then((response) => {
-          // If poll's owner Id is not equal to sessionId
-          if(response.data.ownerId != window.localStorage.getItem('id')){
-            navigate("/polls");
+          // If it is, it's going to set voted to true so that they will see the result view
+          if(response.data.param){
+            setVoted(true);
+          }else{
+            hasVoted();
           }
-        }).catch(error => console.log(error));
+        })
+        .catch(error => console.log(error));
       }
     }).catch(error => console.log(error));
-    hasVoted();
   }
 
   useEffect(() => {
+    // First check
     checkIsParticipant();
+    // check if the poll is closed o save it in a const
+    checkIsClosed();
+    // Get data
     getPollFood();
     getVotes();
+    getPoll();
   },[])
 
   const hasVoted = async () => {
@@ -80,7 +93,7 @@ export const Vote = () => {
     await axios.get(API + '/food/getPollFood/'+pollId)
     .then((response) => {
       setPollFood(response.data);
-      console.log(response.data);
+      console.log(pollId);
     })
     .catch(error => console.log(error));
   }
@@ -145,12 +158,39 @@ export const Vote = () => {
           'foodId': food.foodId
         })
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
         })
         .catch(error => console.log(error));
       }
     })
     setVote();
+  }
+
+  
+  const getPoll = async () => {
+    await axios.get(API + '/poll/getPoll/' + pollId)
+    .then((response) => {
+      setIsOwner(response.data.ownerId == window.localStorage.getItem('id'));
+    })
+    .catch(error => console.log(error));
+  }
+
+  const closePoll = async () => {
+    await axios.put(API + '/poll/close/' + pollId)
+    .then((response) => {
+      // console.log(response.data);
+    })
+    .catch(error => console.log(error));
+    checkIsClosed();
+  }
+
+  const checkIsClosed = async () => {
+    await axios.get(API + '/poll/isClosed/' + pollId)
+    .then((response) => {
+      setIsClosed(response.data.param);
+      // console.log(response.data);
+    })
+    .catch(error => console.log(error));
   }
 
   const setVote = async () => {
@@ -168,24 +208,38 @@ export const Vote = () => {
     await axios.get(API + '/vote/getVotes/'+pollId)
     .then((response) => {
       setVotes(response.data);
-      console.log(response.data);
+      // console.log(response.data);
     })
     .catch(error => console.log(error));
+  }
+
+  const redirectToEditPage = () => {
+    navigate("/poll/edit/" + pollId);
   }
 
   return(
     <div className='width-full display-flex space-around'>
       { voted ? (
-        <div className='border-smaller height-540 width-340'>
-          <div className='space-around height-440'>
+        <div className='height-580 width-340'>
+          <div className='space-around height-480'>
             {
               votes.map(vote => (
                 <div className='orange-backgroundcolor border-radius-5 display-flex space-between margin-top-14 margin-left-28 width-280 height-44'>
-                  <div className='display-flex space-around align-center width-74'><h2 className='font-size-18 font-family'>{vote.name}</h2></div>
+                  <div className='display-flex space-around align-center width-174'><h2 className='font-size-18 font-family'>{vote.name}</h2></div>
                   <div className='display-flex space-around align-center width-64'><h2 className='font-size-18 font-weight-800 font-family'>{vote.votes}</h2></div>
                 </div>
               ))
             }
+          </div>
+          <div className='margin-left-48 width-240 height-98 display-flex space-between align-center'>
+              { isOwner &&
+                  <>
+                    <div onClick={(e) => redirectToEditPage()} className='font-size-34'><IonIcon name='options'></IonIcon></div>
+                    { !isClosed &&
+                      <div onClick={(e) => closePoll()} className='font-size-34 red-color'><IonIcon name='stop-circle-outline'></IonIcon></div>
+                    }
+                  </>
+              }
           </div>
         </div>
       ):(

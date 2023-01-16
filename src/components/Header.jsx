@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { IonIcon } from "react-ion-icon";
+import { useNavigate } from "react-router-dom";
 import './styles/pattern.css';
 
 /**
@@ -11,6 +13,18 @@ import './styles/pattern.css';
 
 
 export const Header = ({page}) => {
+
+  const quit = () => {
+    if(window.localStorage.getItem('id') == null){
+      navigate("/signin");
+    }
+  }
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    quit();
+  },[])
 
   return(
     <div className="display-flex space-between height-110">

@@ -59,7 +59,7 @@ export const Dashboard = ({param}) => {
         <div className='overflow-y-scroll height-580 width-378'>
           { param == 'ownPolls' ? (
             ownPolls.map(ownPoll => (
-                <Poll name={ownPoll.name} id={ownPoll.id} createdBy={ownPoll.ownerUsername} finished={ownPoll.finished}></Poll>
+              <Poll name={ownPoll.name} id={ownPoll.id} createdBy={ownPoll.ownerUsername} finished={ownPoll.finished}></Poll>
             ))
           ):(
             polls.map(poll => (

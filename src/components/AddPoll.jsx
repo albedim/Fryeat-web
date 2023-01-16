@@ -73,7 +73,7 @@ export const AddPoll = () => {
   const addFood = async () => {
     setIsLoading(true);
     await axios.post(API + '/pollfood/add', {
-      'foodId': food.split(" ")[1],
+      'foodId': food.split(" ")[food.split(" ").length - 1],
       'pollId': pollId
     })
     .then((response) => {
@@ -117,7 +117,7 @@ export const AddPoll = () => {
             </div>
             { isLoading ? (
               <div className='margin-right-20'>
-                <button onClick={(e) => createPoll()} className='display-flex align-center space-around width-50 font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
+                <button className='display-flex align-center space-around width-50 font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
                   <SpinnerCircular size={20} color='orange' thickness={200} secondaryColor={'white'} />
                 </button>
               </div>
@@ -135,7 +135,7 @@ export const AddPoll = () => {
             </div>            
             { isLoading ? (
               <div className='margin-right-20'>
-                <button onClick={(e) => addParticipant()} className='width-50 align-center display-flex space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
+                <button className='width-50 align-center display-flex space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
                   <SpinnerCircular size={20} color='orange' thickness={200} secondaryColor={'white'} />
                 </button>
               </div>
@@ -159,7 +159,7 @@ export const AddPoll = () => {
             </div>            
             { isLoading ? (
               <div className='margin-right-20'>
-                <button onClick={(e) => addFood()} className='width-50 display-flex alig-center space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
+                <button className='width-50 display-flex alig-center space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
                   <SpinnerCircular size={20} color='orange' thickness={200} secondaryColor={'white'} />
                 </button>
               </div>

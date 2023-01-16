@@ -31,7 +31,6 @@ export const SignIn = () => {
   const signin = async (e) => {
     setIsLoading(true);
     e.preventDefault();
-    console.log(data);
     await axios.post(API + '/user/signin', data)
     .then((response) => {
       if(response.data.success){
