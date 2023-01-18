@@ -38,7 +38,7 @@ export const ChangePassword = () => {
     }else{
       setIsLoading(true);
       e.preventDefault();
-      await axios.put(API + '/user/changePassword', {
+      await axios.put(API + '/user/change-password', {
         'password': passwords.password,
         'id': userId
       })
@@ -68,7 +68,7 @@ export const ChangePassword = () => {
 
   const validateURL = async () => {
     const l = new URLSearchParams(search).get('l');
-    await axios.post(API + '/recoveryLink/getUserId', {
+    await axios.post(API + '/recovery-link/get-user-id', {
       "link": l
     })
     .then((response) => {

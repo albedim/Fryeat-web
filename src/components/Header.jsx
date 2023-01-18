@@ -20,6 +20,10 @@ export const Header = ({page}) => {
     }
   }
 
+  const redirect = () => {
+    navigate("/account");
+  }
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,7 +36,7 @@ export const Header = ({page}) => {
         <h2 className="font-family font-weight-800 space-around">{page}</h2>
       </div>
       <div className="display-flex space-around align-center width-90">
-        <span className="font-size-30"><IonIcon name='person'></IonIcon></span>
+        <span onClick={(e) => redirect(e)} className="font-size-30"><IonIcon name='person'></IonIcon></span>
       </div>
     </div>
   );

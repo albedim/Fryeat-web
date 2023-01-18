@@ -31,6 +31,7 @@ export const AddPoll = () => {
 
 
   const createPoll = async () => {
+    if(name == null) return;
     setIsLoading(true);
     await axios.post(API + '/poll/add', {
       'name': name,
@@ -71,8 +72,9 @@ export const AddPoll = () => {
   }
 
   const addFood = async () => {
+    if(food == null) return;
     setIsLoading(true);
-    await axios.post(API + '/pollfood/add', {
+    await axios.post(API + '/poll-food/add', {
       'foodId': food.split(" ")[food.split(" ").length - 1],
       'pollId': pollId
     })
@@ -83,6 +85,7 @@ export const AddPoll = () => {
   }
   
   const addParticipant = async () => {
+    if(participant == null) return;
     setIsLoading(true);
     await axios.post(API + '/participation/add', {
       'pollId': pollId,
@@ -151,8 +154,8 @@ export const AddPoll = () => {
             <div className="border-bottom-smaller margin-left-30 height-40 display-flex space-around width-210">
               <select name='food' onChange={(e) => handleFood(e)} className="height-30 background-transparent outline-none border-none width-180">
                 <option value={"choose"}>Choose</option>
-                { avaibleFood.map((food, key) => (
-                    <option value={food.name + " " + food.id}>{food.name}</option>
+                { avaibleFood.map((food) => (
+                    <option key={food.id} value={food.name + " " + food.id}>{food.name}</option>
                   ))
                 }
               </select>

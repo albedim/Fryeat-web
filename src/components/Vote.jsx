@@ -48,14 +48,14 @@ export const Vote = () => {
 
   const checkIsParticipant = async () => {
     // is Partecipant ?
-    await axios.get(API + '/participation/isParticipant?userId='+window.localStorage.getItem('id')+'&pollId='+pollId)
+    await axios.get(API + '/participation/is-participant?userId='+window.localStorage.getItem('id')+'&pollId='+pollId)
     .then(async (response) => {
       // If not, leave the page
       if(!response.data.param){
         navigate("/polls");
       }else{
         // If so, check if the poll is closed
-        await axios.get(API + '/poll/isClosed/' + pollId)
+        await axios.get(API + '/poll/is-closed/' + pollId)
         .then((response) => {
           // If it is, it's going to set voted to true so that they will see the result view
           if(response.data.param){
@@ -81,7 +81,7 @@ export const Vote = () => {
   },[])
 
   const hasVoted = async () => {
-    await axios.get(API + '/participation/hasVoted?userId=' + window.localStorage.getItem('id') + "&pollId=" + pollId)
+    await axios.get(API + '/participation/has-voted?userId=' + window.localStorage.getItem('id') + "&pollId=" + pollId)
     .then((response) => {
       setVoted(response.data.param);
       // console.log(response.data);
@@ -90,10 +90,10 @@ export const Vote = () => {
   }
 
   const getPollFood = async () => {
-    await axios.get(API + '/food/getPollFood/'+pollId)
+    await axios.get(API + '/food/get-poll-food/'+pollId)
     .then((response) => {
       setPollFood(response.data);
-      console.log(pollId);
+      // console.log(pollId);
     })
     .catch(error => console.log(error));
   }
@@ -168,7 +168,7 @@ export const Vote = () => {
 
   
   const getPoll = async () => {
-    await axios.get(API + '/poll/getPoll/' + pollId)
+    await axios.get(API + '/poll/get-poll/' + pollId)
     .then((response) => {
       setIsOwner(response.data.ownerId == window.localStorage.getItem('id'));
     })
@@ -185,7 +185,7 @@ export const Vote = () => {
   }
 
   const checkIsClosed = async () => {
-    await axios.get(API + '/poll/isClosed/' + pollId)
+    await axios.get(API + '/poll/is-closed/' + pollId)
     .then((response) => {
       setIsClosed(response.data.param);
       // console.log(response.data);
@@ -194,18 +194,18 @@ export const Vote = () => {
   }
 
   const setVote = async () => {
-    await axios.put(API + '/participation/setVote?userId=' + window.localStorage.getItem('id') + "&pollId="+pollId)
+    await axios.put(API + '/participation/set-vote?userId=' + window.localStorage.getItem('id') + "&pollId="+pollId)
     .then((response) => {
-      console.log(response.data);
+      // console.log(response.data);
     })
     .catch(error => console.log(error));
     await sleep(400);
-    hasVoted();
+    setVoted(true);
     getVotes();
   }
 
   const getVotes = async () => {
-    await axios.get(API + '/vote/getVotes/'+pollId)
+    await axios.get(API + '/vote/get-votes/'+pollId)
     .then((response) => {
       setVotes(response.data);
       // console.log(response.data);
@@ -224,14 +224,14 @@ export const Vote = () => {
           <div className='space-around height-480'>
             {
               votes.map(vote => (
-                <div className='orange-backgroundcolor border-radius-5 display-flex space-between margin-top-14 margin-left-28 width-280 height-44'>
+                <div key={vote.id} className='orange-backgroundcolor border-radius-5 display-flex space-between margin-top-14 margin-left-28 width-280 height-44'>
                   <div className='display-flex space-around align-center width-174'><h2 className='font-size-18 font-family'>{vote.name}</h2></div>
                   <div className='display-flex space-around align-center width-64'><h2 className='font-size-18 font-weight-800 font-family'>{vote.votes}</h2></div>
                 </div>
               ))
             }
           </div>
-          <div className='margin-left-48 width-240 height-98 display-flex space-between align-center'>
+          <div className='margin-left-48 width-240 height-98 display-flex space-around align-center'>
               { isOwner &&
                   <>
                     <div onClick={(e) => redirectToEditPage()} className='font-size-34'><IonIcon name='options'></IonIcon></div>
@@ -247,11 +247,11 @@ export const Vote = () => {
           <div className='margin-top-80 display-flex space-around height-240 width-340'>
             {
               pollFood.map(food => (
-                <img onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={(e) => onTouchEnd(food.id)} id={"image" + food.id} className='border-radius-20 position-absolute width-310' src={"/"+food.image} alt="s" />
+                <img key={food.id} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={(e) => onTouchEnd(food.id)} id={"image" + food.id} className='border-radius-20 position-absolute width-310' src={"/"+food.image} alt="s" />
               ))
             }
           </div>
-          <div className='margin-left-28 margin-top-40 width-280 height-40 space-between display-flex'>
+          <div className='margin-left-28 margin-top-98 width-280 height-40 space-between display-flex'>
             <div className='display-flex space-around align-center width-70'>
               <div className='orange-color font-size-24'><IonIcon name='arrow-undo'></IonIcon></div>
               <h2>{likedFood}</h2>

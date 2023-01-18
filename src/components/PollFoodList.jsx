@@ -22,10 +22,10 @@ export const PollFoodList = () => {
   const [pollFood, setPollFood] = useState([]);
 
   const getPollFood = async () => {
-    await axios.get(API + '/food/getPollFood/' + pollId)
+    await axios.get(API + '/food/get-poll-food/' + pollId)
     .then((response) => {
       setPollFood(response.data);
-      console.log(response.data);
+      // console.log(response.data);
     })
     .catch(error => console.log(error));
   }
@@ -52,10 +52,10 @@ export const PollFoodList = () => {
         <div onClick={(e) => createAnimation(e)} className='height-60 border-top-right-radius-10 border-top-left-radius-10 display-flex space-around align-center'>
           <h2 className='font-family'>FOOD</h2>
         </div>
-        <div id='foodlist' className='display-none height-auto max-height-500 overflow-y-scroll'>
+        <div id='foodlist' className='display-none height-auto max-height-400 overflow-y-scroll'>
           { 
             pollFood.map(food => (
-              <PollFood name={food.name} foodId={food.id} pollId={pollId} image={food.image}/>
+              <PollFood key={food.id} name={food.name} foodId={food.id} pollId={pollId} image={food.image}/>
             ))
           }
         </div>

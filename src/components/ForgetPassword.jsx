@@ -30,8 +30,7 @@ export const ForgetPassword = () => {
   const sendRecoveryLink = async (e) => {
     setIsLoading(true);
     e.preventDefault();
-    console.log(data);
-    await axios.post(API + '/recoveryLink/add', data)
+    await axios.post(API + '/recovery-link/add', data)
     .then((response) => {
       if(response.data.success)
         navigate("/signin");

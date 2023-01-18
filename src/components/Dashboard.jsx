@@ -23,7 +23,7 @@ export const Dashboard = ({param}) => {
   const navigate = useNavigate();
 
   const getOwnPolls = async () => {
-    await axios.get(API + '/poll/getOwn/' + window.localStorage.getItem('id'))
+    await axios.get(API + '/poll/get-own/' + window.localStorage.getItem('id'))
     .then((response) => {
       setOwnPolls(response.data);
       // console.log(response.data);
@@ -43,9 +43,15 @@ export const Dashboard = ({param}) => {
 
   useEffect(() => {
     quit();
-    getPolls();
-    getOwnPolls();
   },[])
+
+  useEffect(() => {
+    getPolls();
+  },[polls])
+
+  useEffect(() => {
+    getOwnPolls();
+  },[ownPolls])
 
   const quit = () => {
     if(window.localStorage.getItem('id') == null){
@@ -58,13 +64,31 @@ export const Dashboard = ({param}) => {
       <div className='display-flex width-full space-around'>
         <div className='overflow-y-scroll height-580 width-378'>
           { param == 'ownPolls' ? (
-            ownPolls.map(ownPoll => (
-              <Poll name={ownPoll.name} id={ownPoll.id} createdBy={ownPoll.ownerUsername} finished={ownPoll.finished}></Poll>
-            ))
+            ownPolls.length > 0 ? (
+              ownPolls.map(ownPoll => (
+                <Poll isOwn={true} key={ownPoll.id} name={ownPoll.name} id={ownPoll.id} createdBy={ownPoll.ownerUsername} finished={ownPoll.finished}></Poll>
+              ))
+            ):(
+              <div className='height-140 display-flex align-center space-around'>
+                <div className='width-180 display-flex align-center'>
+                  <div><img className='width-80' src="/coffe.png" alt="" /></div>
+                  <div className='margin-left-14'><h2 className='font-family font-size-16'>Nothing found here</h2></div>
+                </div>
+              </div>
+            )
           ):(
-            polls.map(poll => (
-              <Poll name={poll.name} id={poll.id} createdBy={poll.ownerUsername} finished={poll.finished}></Poll>
-            ))
+            polls.length > 0 ? (
+              polls.map(poll => (
+                <Poll isOwn={false} key={poll.id} name={poll.name} id={poll.id} createdBy={poll.ownerUsername} finished={poll.finished}></Poll>
+              ))
+            ):(
+              <div className='height-140 display-flex align-center space-around'>
+                <div className='width-180 display-flex align-center'>
+                  <div><img className='width-80' src="/coffe.png" alt="" /></div>
+                  <div className='margin-left-14'><h2 className='font-family font-size-16'>Nothing found here</h2></div>
+                </div>
+              </div>
+            )
           )}
         </div>
       </div>

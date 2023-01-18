@@ -14,7 +14,7 @@ import axios from "axios";
 export const PollFood = ({name, foodId, image, pollId}) => {
 
   const deletePollFood = async (foodId) => {
-    await axios.delete(API + '/pollfood/delete?foodId=' + foodId + "&pollId=" + pollId)
+    await axios.delete(API + '/poll-food/delete?foodId=' + foodId + "&pollId=" + pollId)
     .then((response) => {
       // console.log(response.data);
     })

@@ -13,6 +13,7 @@ import { Vote } from './components/Vote';
 import { EditPoll, Participants } from './components/Participants';
 import { PollFoodList } from './components/PollFoodList';
 import { NotFound } from './components/NotFound';
+import { Account } from './components/Account';
 
 function App() {
   return (
@@ -35,7 +36,7 @@ function App() {
           }
           />
         <Route
-          path='/changepassword/request'
+          path='/change-password/request'
           element={
             <>
               <ForgetPassword/>
@@ -43,7 +44,7 @@ function App() {
           }
         />
         <Route
-          path='/changepassword/change'
+          path='/change-password/change'
           element={
             <>
               <ChangePassword/>
@@ -51,7 +52,7 @@ function App() {
           }
         />
         <Route
-          path='/myPolls'
+          path='/polls/me'
           element={
             <>
               <Header page={"My Polls"}/>
@@ -81,7 +82,7 @@ function App() {
           }
         />
         <Route
-          path='/addpoll'
+          path='/poll/add'
           element={
             <>
               <Header page={"Add Poll"}/>
@@ -97,6 +98,16 @@ function App() {
               <Header page={"Edit Poll"}/>
               <Participants/>
               <PollFoodList/>
+              <Menu param={"null"}/>
+            </>
+          }
+        />
+        <Route
+          path='/account'
+          element={
+            <>
+              <Header page={"Account"}/>
+              <Account/>
               <Menu param={"null"}/>
             </>
           }

@@ -23,7 +23,7 @@ export const Participants = () => {
   const [participants, setParticipants] = useState([]);
 
   const getParticipants = async () => {
-    await axios.get(API + '/user/getParticipants/' + pollId)
+    await axios.get(API + '/user/get-participants/' + pollId)
     .then((response) => {
       setParticipants(response.data);
       // console.log(response.data);
@@ -32,7 +32,7 @@ export const Participants = () => {
   }
 
   const getPoll = async () => {
-    await axios.get(API + '/poll/getPoll/' + pollId)
+    await axios.get(API + '/poll/get-poll/' + pollId)
     .then((response) => {
       if(response.data.ownerId != window.localStorage.getItem('id')){
         navigate("/polls");
@@ -43,8 +43,11 @@ export const Participants = () => {
 
   useEffect(() => {
     getParticipants();
-    getPoll();
   },[participants]);
+
+  useEffect(() => {
+    getPoll();
+  },[]);
 
   const createAnimation = () => {
     if(document.querySelector("#participantslist").style.display == 'none'){
@@ -64,10 +67,10 @@ export const Participants = () => {
         <div onClick={(e) => createAnimation(e)} className='height-60 border-top-right-radius-10 border-top-left-radius-10 display-flex space-around align-center'>
           <h2 className='font-family'>PARTICIPANTS</h2>
         </div>
-        <div id='participantslist' className='height-auto max-height-500 overflow-y-scroll'>
+        <div id='participantslist' className='height-auto max-height-400 overflow-y-scroll'>
           { 
             participants.map(participant => (
-              <Participant userId={participant.id} pollId={pollId} name={participant.name} username={participant.username}/>
+              <Participant key={participant.id} userId={participant.id} pollId={pollId} name={participant.name} username={participant.username}/>
             ))
           }
         </div>

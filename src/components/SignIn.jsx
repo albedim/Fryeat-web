@@ -35,7 +35,7 @@ export const SignIn = () => {
     .then((response) => {
       if(response.data.success){
         window.localStorage.setItem('id', response.data.id)
-        navigate("/myPolls");
+        navigate("/polls/me");
       }
       // console.log(response.data);
     })
@@ -48,7 +48,6 @@ export const SignIn = () => {
     newData[e.target.id] = e.target.value;
     setData(newData);
   }
-
 
   return(
     <div className='width-full height-1000 display-flex space-around align-center'>
@@ -72,11 +71,12 @@ export const SignIn = () => {
       </div>
       <div className='display-flex align-center space-around height-100'>
         { !isLoading ? (
-          <a href=""><button onClick={(e) => signin(e)} className='width-200 font-weight-700 font-size-14 white-color border-none button border-radius-5 height-50'>SIGN IN</button></a>
+          <button onClick={(e) => signin(e)} className='width-200 font-weight-700 font-size-14 white-color border-none button border-radius-5 height-50'>SIGN IN</button>
         ):(
           <>
-            <SpinnerCircular className='position-absolute' size={20} color='orange' thickness={200} secondaryColor={'white'} />
-            <button className='width-200 font-weight-700 font-size-14 white-color border-none button-clicked border-radius-5 height-50'></button>
+            <button className='width-200 font-weight-700 display-flex space-around align-center font-size-14 white-color border-none button-clicked border-radius-5 height-50'>
+              <SpinnerCircular size={20} color='orange' thickness={200} secondaryColor={'white'} />
+            </button>
           </>
         )}
       </div>
