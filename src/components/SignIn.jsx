@@ -2,7 +2,7 @@ import './styles/pattern.css';
 import './styles/components.css';
 import { useState } from 'react';
 import axios from 'axios';
-import { FORGET_PASSWORD_URL, API } from '../utils.ts';
+import { FORGET_PASSWORD_URL, API, formValider } from '../utils.ts';
 import { SpinnerCircular } from 'spinners-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import React from 'react';
@@ -70,15 +70,21 @@ export const SignIn = () => {
         </form>
       </div>
       <div className='display-flex align-center space-around height-100'>
-        { !isLoading ? (
-          <button onClick={(e) => signin(e)} className='width-200 font-weight-700 font-size-14 white-color border-none button border-radius-5 height-50'>SIGN IN</button>
-        ):(
-          <>
-            <button className='width-200 font-weight-700 display-flex space-around align-center font-size-14 white-color border-none button-clicked border-radius-5 height-50'>
-              <SpinnerCircular size={20} color='orange' thickness={200} secondaryColor={'white'} />
-            </button>
-          </>
-        )}
+        {
+          formValider(data.email_username) && formValider(data.password) ? (
+            !isLoading ? (
+              <button onClick={(e) => signin(e)} className='width-200 font-weight-700 font-size-14 white-color border-none button border-radius-5 height-50'>SIGN IN</button>
+            ):(
+              <>
+                <button className='width-200 font-weight-700 display-flex space-around align-center font-size-14 white-color border-none button-clicked border-radius-5 height-50'>
+                  <SpinnerCircular size={20} color='orange' thickness={200} secondaryColor={'white'} />
+                </button>
+              </>
+            )
+          ):(
+            <button onClick={(e) => signin(e)} className='width-200 opacity-40 font-weight-700 font-size-14 white-color border-none button border-radius-5 height-50'>SIGN IN</button>
+          )
+        }
       </div>
       <div><h5 onClick={(e) => navigate(FORGET_PASSWORD_URL)} className='margin-left-60 gray-color font-weight-300 font-size-12'>Forgot password?</h5></div>
     </div>

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { React } from 'react';
 import { useEffect, useState } from 'react';
 import { IonIcon } from 'react-ion-icon';
-import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, redirect, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { API } from '../utils.ts';
 import './styles/pattern.css';
 
@@ -26,6 +26,8 @@ export const Vote = () => {
   const [votedFood, setVotedFood] = useState([]);
 
   const [votes, setVotes] = useState([]);
+
+  const [finalVotes, setFinalVotes] = useState([]);
 
   const [likedFood, setLikedFood] = useState(0);
 
@@ -76,6 +78,7 @@ export const Vote = () => {
     checkIsClosed();
     // Get data
     getPollFood();
+    getFinalVotes();
     getVotes();
     getPoll();
   },[])
@@ -213,53 +216,96 @@ export const Vote = () => {
     .catch(error => console.log(error));
   }
 
+    const getFinalVotes = async () => {
+    await axios.get(API + '/vote/get-final-votes/'+pollId)
+    .then((response) => {
+      setFinalVotes(response.data);
+      // console.log(response.data);
+    })
+    .catch(error => console.log(error));
+  }
+
   const redirectToEditPage = () => {
     navigate("/poll/edit/" + pollId);
   }
 
+  const redirectToJusteat = (food) => {
+    window.location.replace('https://justeat.it/area/20123-milan?q='+food+'&so=Default_Display_Rank');
+  }
+
   return(
     <div className='width-full display-flex space-around'>
-      { voted ? (
+      { !isClosed ? (
+        voted ? (
+          <div className='height-580 width-340'>
+            <div className='space-around height-480'>
+              {
+                votes.map(vote => (
+                  <div key={vote.id} className='orange-backgroundcolor border-radius-5 display-flex space-between margin-top-14 margin-left-28 width-280 height-44'>
+                    <div className='display-flex space-around align-center width-174'><h2 className='font-size-18 font-family'>{vote.name}</h2></div>
+                    <div className='display-flex space-around align-center width-64'><h2 className='font-size-18 font-weight-800 font-family'>{vote.votes}</h2></div>
+                  </div>
+                ))
+              }
+            </div>
+            <div className='margin-left-48 width-240 height-98 display-flex space-around align-center'>
+                { isOwner &&
+                    <>
+                      <div onClick={(e) => redirectToEditPage()} className='font-size-34'><IonIcon name='options'></IonIcon></div>
+                      <div onClick={(e) => closePoll()} className='font-size-34 red-color'><IonIcon name='stop-circle-outline'></IonIcon></div>
+                    </>
+                }
+            </div>
+          </div>
+        ):(
+          <div className='space-around display-block height-540 width-340'>
+            <div className='margin-top-80 display-flex space-around height-240 width-340'>
+              {
+                pollFood.map(food => (
+                  <img key={food.id} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={(e) => onTouchEnd(food.id)} id={"image" + food.id} className='border-radius-20 position-absolute width-310' src={"/"+food.image} alt="s" />
+                ))
+              }
+            </div>
+            <div className='margin-left-28 margin-top-98 width-280 height-40 space-between display-flex'>
+              <div className='display-flex space-around align-center width-70'>
+                <div className='orange-color font-size-24'><IonIcon name='arrow-undo'></IonIcon></div>
+                <h2>{likedFood}</h2>
+              </div>
+              <div className='display-flex space-around align-center width-70'>
+                <h2>{unLikedFood}</h2>
+                <div className='orange-color font-size-24'><IonIcon name='arrow-redo'></IonIcon></div>
+              </div>
+            </div>
+          </div>
+        )
+      ):(
         <div className='height-580 width-340'>
           <div className='space-around height-480'>
             {
-              votes.map(vote => (
-                <div key={vote.id} className='orange-backgroundcolor border-radius-5 display-flex space-between margin-top-14 margin-left-28 width-280 height-44'>
-                  <div className='display-flex space-around align-center width-174'><h2 className='font-size-18 font-family'>{vote.name}</h2></div>
-                  <div className='display-flex space-around align-center width-64'><h2 className='font-size-18 font-weight-800 font-family'>{vote.votes}</h2></div>
-                </div>
+              finalVotes.map(vote => (
+                vote.winner ? (
+                  <div onClick={(e) => redirectToJusteat(vote.name)} key={vote.id} className='orange-backgroundcolor border-radius-5 display-flex space-between margin-top-14 margin-left-28 width-280 height-44'>
+                    <div className='display-flex space-around align-center width-174'><h2 className='font-size-18 font-family'>{vote.name}</h2></div>
+                    <div className='display-flex space-around align-center width-64'>
+                      <h2 className='font-size-18 font-weight-800 font-family'>{vote.votes}</h2>
+                      <div className='font-size-24'><IonIcon name='trophy'/></div>
+                    </div>
+                  </div>
+                ):(
+                  <div key={vote.id} className='orange-backgroundcolor border-radius-5 display-flex space-between margin-top-14 margin-left-28 width-280 height-44'>
+                    <div className='display-flex space-around align-center width-174'><h2 className='font-size-18 font-family'>{vote.name}</h2></div>
+                    <div className='display-flex space-around align-center width-64'>
+                      <h2 className='font-size-18 font-weight-800 font-family'>{vote.votes}</h2>
+                    </div>
+                  </div>
+                )
               ))
             }
           </div>
           <div className='margin-left-48 width-240 height-98 display-flex space-around align-center'>
               { isOwner &&
-                  <>
-                    <div onClick={(e) => redirectToEditPage()} className='font-size-34'><IonIcon name='options'></IonIcon></div>
-                    { !isClosed &&
-                      <div onClick={(e) => closePoll()} className='font-size-34 red-color'><IonIcon name='stop-circle-outline'></IonIcon></div>
-                    }
-                  </>
+                <div onClick={(e) => redirectToEditPage()} className='font-size-34'><IonIcon name='options'></IonIcon></div>
               }
-          </div>
-        </div>
-      ):(
-        <div className='space-around display-block height-540 width-340'>
-          <div className='margin-top-80 display-flex space-around height-240 width-340'>
-            {
-              pollFood.map(food => (
-                <img key={food.id} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={(e) => onTouchEnd(food.id)} id={"image" + food.id} className='border-radius-20 position-absolute width-310' src={"/"+food.image} alt="s" />
-              ))
-            }
-          </div>
-          <div className='margin-left-28 margin-top-98 width-280 height-40 space-between display-flex'>
-            <div className='display-flex space-around align-center width-70'>
-              <div className='orange-color font-size-24'><IonIcon name='arrow-undo'></IonIcon></div>
-              <h2>{likedFood}</h2>
-            </div>
-            <div className='display-flex space-around align-center width-70'>
-              <h2>{unLikedFood}</h2>
-              <div className='orange-color font-size-24'><IonIcon name='arrow-redo'></IonIcon></div>
-            </div>
           </div>
         </div>
       )}

@@ -3,7 +3,7 @@ import './styles/components.css';
 import { useState } from 'react';
 import axios from 'axios';
 import {IonIcon} from "react-ion-icon";
-import { API } from '../utils.ts';
+import { API, formValider } from '../utils.ts';
 import { SpinnerCircular } from 'spinners-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import React from 'react';
@@ -90,14 +90,20 @@ export const SignUp = () => {
         </form>
       </div>
       <div className='display-flex align-center space-around height-100'>
-        { !isLoading ? (
-          <button onClick={(e) => signup(e)} className='width-200 font-weight-700 font-size-medium white-color border-none button border-radius-5 height-50'>SIGN UP</button>
-        ):(
-          <>
-            <SpinnerCircular className='position-absolute' size={20} color='#fcbe7c' thickness={200} secondaryColor={'white'} />
-            <button className='width-200 font-weight-700 font-size-14 white-color border-none button-clicked border-radius-5 height-50'></button>
-          </>
-        )}
+        {
+          formValider(data.name) && formValider(data.username) && formValider(data.email) && formValider(data.place) && formValider(data.password) ? (
+            !isLoading ? (
+              <button onClick={(e) => signup(e)} className='width-200 font-weight-700 font-size-medium white-color border-none button border-radius-5 height-50'>SIGN UP</button>
+            ):(
+              <>
+                <SpinnerCircular className='position-absolute' size={20} color='#fcbe7c' thickness={200} secondaryColor={'white'} />
+                <button className='width-200 font-weight-700 font-size-14 white-color border-none button-clicked border-radius-5 height-50'></button>
+              </>
+            )
+          ):(
+            <button className='width-200 font-weight-700 opacity-40 font-size-medium white-color border-none button border-radius-5 height-50'>SIGN UP</button>
+          )
+        }
       </div>
     </div>
     </div>

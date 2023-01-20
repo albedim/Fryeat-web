@@ -2,7 +2,7 @@ import './styles/pattern.css';
 import './styles/components.css';
 import { useState } from 'react';
 import axios from 'axios';
-import { FORGET_PASSWORD_URL, API } from '../utils.ts';
+import { FORGET_PASSWORD_URL, formValider, API } from '../utils.ts';
 import { SpinnerCircular } from 'spinners-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import React from 'react';
@@ -61,14 +61,20 @@ export const ForgetPassword = () => {
         </form>
       </div>
       <div className='display-flex align-center space-around height-60'>
-        { !isLoading ? (
-          <button onClick={(e) => sendRecoveryLink(e)} className='width-200 font-weight-700 font-size-14 white-color border-none button border-radius-5 height-50'>SEND</button>
-        ):(
-          <>
-            <SpinnerCircular className='position-absolute' size={20} color='#fcbe7c' thickness={200} secondaryColor={'white'} />
-            <button className='width-200 font-weight-700 font-size-14 white-color border-none button-clicked border-radius-5 height-50'></button>
-          </>
-        )}
+        {
+          formValider(data.email) ? (
+            !isLoading ? (
+              <button onClick={(e) => sendRecoveryLink(e)} className='width-200 font-weight-700 font-size-14 white-color border-none button border-radius-5 height-50'>SEND</button>
+            ):(
+              <>
+                <SpinnerCircular className='position-absolute' size={20} color='#fcbe7c' thickness={200} secondaryColor={'white'} />
+                <button className='width-200 font-weight-700 font-size-14 white-color border-none button-clicked border-radius-5 height-50'></button>
+              </>
+            )
+          ):(
+            <button className='opacity-40 width-200 font-weight-700 font-size-14 white-color border-none button border-radius-5 height-50'>SEND</button>
+          )
+        }
       </div>
     </div>
     </div>

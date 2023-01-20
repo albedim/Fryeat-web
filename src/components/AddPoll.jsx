@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SpinnerCircular } from 'spinners-react';
-import { API } from '../utils.ts';
+import { API, formValider } from '../utils.ts';
 import './styles/pattern.css';
 
 /**
@@ -118,37 +118,55 @@ export const AddPoll = () => {
             <div className="border-bottom-smaller margin-left-30 height-40 space-around width-210">
               <input type="text" onChange={(e) => handleName(e)} className="height-30 background-transparent outline-none border-none width-180" placeholder="Poll name"/>
             </div>
-            { isLoading ? (
-              <div className='margin-right-20'>
-                <button className='display-flex align-center space-around width-50 font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
-                  <SpinnerCircular size={20} color='orange' thickness={200} secondaryColor={'white'} />
-                </button>
-              </div>
+            { formValider(name) ? (
+              isLoading ? (
+                <div className='margin-right-20'>
+                  <button className='display-flex align-center space-around width-50 font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
+                    <SpinnerCircular size={20} color='orange' thickness={200} secondaryColor={'white'} />
+                  </button>
+                </div>
+              ):(
+                <div className='margin-right-20'>
+                  <button onClick={(e) => createPoll()} className='align-center width-50 display-flex space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
+                    Add
+                  </button>
+                </div>
+              )
             ):(
               <div className='margin-right-20'>
-                <button onClick={(e) => createPoll()} className='align-center width-50 display-flex space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
-                  Add
-                </button>
-              </div>
-            )}
+              <button className='display-flex opacity-40 align-center space-around width-50 font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
+                Add
+              </button>
+            </div>
+            )
+          }
           </div>
           <div id='participation' className='display-none space-between margin-top-30 align-center height-90'>
             <div className="border-bottom-smaller margin-left-30 height-40 display-flex space-around width-210">
               <input id="participant" type="text" onChange={(e) => handleParticipant(e)} value={participant} className="height-30 background-transparent outline-none border-none width-180" placeholder="Add participant"/>
-            </div>            
-            { isLoading ? (
-              <div className='margin-right-20'>
-                <button className='width-50 align-center display-flex space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
-                  <SpinnerCircular size={20} color='orange' thickness={200} secondaryColor={'white'} />
-                </button>
-              </div>
+            </div> 
+            { formValider(participant) ? (      
+              isLoading ? (
+                <div className='margin-right-20'>
+                  <button className='width-50 align-center display-flex space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
+                    <SpinnerCircular size={20} color='orange' thickness={200} secondaryColor={'white'} />
+                  </button>
+                </div>
+              ):(
+                <div className='margin-right-20'>
+                  <button onClick={(e) => addParticipant()} className='width-50 display-flex align-center space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
+                    Add
+                  </button>
+                </div>
+              )
             ):(
               <div className='margin-right-20'>
-                <button onClick={(e) => addParticipant()} className='width-50 display-flex align-center space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
+                <button className='width-50 opacity-40 align-center display-flex space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
                   Add
                 </button>
               </div>
-            )}
+            )
+          }
           </div>
           <div id='food' className='display-none space-between margin-top-20 align-center height-90'>
             <div className="border-bottom-smaller margin-left-30 height-40 display-flex space-around width-210">
@@ -159,7 +177,7 @@ export const AddPoll = () => {
                   ))
                 }
               </select>
-            </div>            
+            </div>
             { isLoading ? (
               <div className='margin-right-20'>
                 <button className='width-50 display-flex alig-center space-around font-weight-700 font-size-12 white-color border-none button-clicked border-radius-5 height-40'>
